@@ -1,0 +1,3 @@
+[submodule "plugins/l4d2"]
+	path = plugins/l4d2
+	url = https://github.com/Agnes4m/nonebot_plugin_l4d2_server.git

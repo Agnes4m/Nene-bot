@@ -1,54 +1,31 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 import nonebot
 from nonebot.adapters.onebot.v11 import Adapter as ONEBOT_V11Adapter
 
-# Custom your logger
-# 
-# from nonebot.log import logger, default_format
-# logger.add("error.log",
-#            rotation="00:00",
-#            diagnose=False,
-#            level="ERROR",
-#            format=default_format)
+from nonebot.adapters.kaiheila import Adapter as 开黑啦Adapter
 
-# You can pass some keyword args config to init function
+from nonebot.adapters.qqguild import Adapter as QQ_频道Adapter
+
+from nonebot.adapters.onebot.v12 import Adapter as ONEBOT_V12Adapter
+
+
+
 nonebot.init()
-app = nonebot.get_asgi()
 
 driver = nonebot.get_driver()
 driver.register_adapter(ONEBOT_V11Adapter)
 
-#nonebot.load_builtin_plugins("echo")
-#nonebot.load_plugin('nonebot_plugin_aidraw')
-#nonebot.init(apscheduler_autostart=True)
-#nonebot.init(apscheduler_config={
-#    "apscheduler.timezone": "Asia/Shanghai"
-#})
-#nonebot.load_plugin("nonebot_plugin_fortune")
-# "nonebot_plugin_apscheduler",
-nonebot.load_plugin("nonebot_plugin_reboot") # 加载重启插件
+driver.register_adapter(开黑啦Adapter)
 
-# Please DO NOT modify this file unless you know what you are doing!
-# As an alternative, you should use command `nb` or modify `pyproject.toml` to load plugins
-# nonebot.load_from_toml("pyproject.toml")
+driver.register_adapter(QQ_频道Adapter)
 
-if __name__ == "__mp_main__": # 仅在子进程运行的代码
-    # Please DO NOT modify this file unless you know what you are doing!
-    # As an alternative, you should use command `nb` or modify `pyproject.toml` to load plugins
-    # 加载插件
-    nonebot.load_from_toml("pyproject.toml")
-    # ...
+driver.register_adapter(ONEBOT_V12Adapter)
+
+nonebot.load_builtin_plugins('echo')
 
 
-# Modify some config / config depends on loaded configs
-# 
-# config = driver.config
-# do something...
-#        0.0
+nonebot.load_from_toml("pyproject.toml")
 
 if __name__ == "__main__":
-    nonebot.logger.warning("Always use `nb run` to start the bot instead of manually running!")
-        
-    nonebot.run(app="__mp_main__:app")
+    nonebot.run()
