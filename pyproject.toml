@@ -1,9 +1,25 @@
-[project]
-name = "nene"
-version = "0.1.0"
-description = "nene-bot"
+[tool.poetry]
+name = "Nene"
+version = "2.0.0"
+description = "跨适配器的通用全功能机器人"
+authors = ["Agnes Digital <Z735803792@163.com>"]
+license = "AGPL"
 readme = "README.md"
-requires-python = ">=3.8, <4.0"
+
+[[tool.poetry.source]]
+name = "tsinghua"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+secondary = true
+
+[[tool.poetry.source]]
+name = 'aliyun'
+url = 'https://mirrors.aliyun.com/pypi/simple/'
+secondary = true
+
+[[tool.poetry.source]]
+name = 'pypi_'
+url = 'https://pypi.python.org/simple'
+secondary = true
 
 [tool.nonebot]
 adapters = [
@@ -12,6 +28,7 @@ adapters = [
     {name = "QQ 频道", module_name = "nonebot.adapters.qqguild"},
     {name = "OneBot V12", module_name = "nonebot.adapters.onebot.v12"}
 ]
-plugins = ["nonebot_plugin_apscheduler", "nonebot_plugin_crazy_thursday", "nonebot_plugin_heweather", "nonebot_plugin_moyu","nonebot_plugin_gamedraw", "nonebot_plugin_today_in_history", "nonebot_plugin_tarot", "nonebot_plugin_bfinfo", "nonebot_plugin_htmlrender", "nonebot_plugin_PicMenu", "nonebot_plugin_morning", "nonebot_plugin_bottle", "nonebot_plugin_picstatus", "nonebot_plugin_blacklist", "nonebot_plugin_imagetools","nonebot_plugin_no_repeat", "nonebot_plugin_arkrecord", "nonebot_plugin_60s",  "youth-version-of-setu4",  "nonebot_plugin_whateat_pic","nonebot_plugin_megumin", "nonebot_plugin_shindan", "nonebot_plugin_bilifan","nonebot_plugin_pluginupdatecheck", "nonebot_plugin_arktools", "nonebot_plugin_fortune", "nonebot_plugin_dog", "GenshinUID", "nonebot_plugin_learning_chat", "nonebot_plugin_homo_mathematician", "nonebot_plugin_rename", "nonebot_plugin_datastore", "haruka_bot", "nonebot_plugin_guild_patch", "nonebot_plugin_al", "nonebot_plugin_ddcheck", "nonebot_plugin_tts_gal", "nonebot_plugin_pjsk"]
+plugins = ["nonebot_plugin_apscheduler",
+"nonebot_plugin_userinfo",
+"nonebot-plugin-send-anything-anywhere"]
 plugin_dirs = ["src/plugins"]
-builtin_plugins = ["echo"]
