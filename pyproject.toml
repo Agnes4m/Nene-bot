@@ -7,8 +7,8 @@ license = "AGPL"
 readme = "README.md"
 
 [[tool.poetry.source]]
-name = "tsinghua"
-url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+name = "tencentyun"
+url = "https://mirrors.tencent.com/pypi/simple"
 secondary = true
 
 [[tool.poetry.source]]
@@ -32,3 +32,15 @@ plugins = ["nonebot_plugin_apscheduler",
 "nonebot_plugin_userinfo",
 "nonebot-plugin-send-anything-anywhere"]
 plugin_dirs = ["src/plugins"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+nonebot2 = "^2.0.0"
+nonebot-adapter-qqguild = "^0.2.3"
+nonebot-adapter-kaiheila = "^0.2.7"
+nonebot-adapter-onebot = "^2.2.3"
+nonebot-plugin-apscheduler = "^0.3.0"
+nonebot-plugin-send-anything-anywhere = "^0.2.7"
+pillow = "^9.0.0"
+httpx = "^0.24.0"
+aiofiles = "^23.1.0"
