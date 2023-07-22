@@ -1,19 +1,15 @@
 from typing import Annotated
 
 from nonebot import on_command, on_fullmatch, on_regex, require
-from nonebot.adapters.onebot.v11 import (
-    GROUP,
-    GROUP_ADMIN,
-    GROUP_OWNER)
-from nonebot.adapters import (
-    Message,
-    MessageSegment,
-)
+from nonebot.adapters import Message, MessageSegment
+from nonebot.adapters.onebot.v11 import GROUP, GROUP_ADMIN, GROUP_OWNER
 from nonebot.log import logger
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg, Depends, RegexStr
 from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
+from nonebot_plugin_saa import Image, MessageFactory, Text
+from utils_.usrinfo import G
 
 from .config import FortuneConfig, FortuneThemesDict
 from .data_source import FortuneManager, fortune_manager
@@ -21,7 +17,7 @@ from .data_source import FortuneManager, fortune_manager
 require("nonebot_plugin_apscheduler")
 from nonebot_plugin_apscheduler import scheduler  # isort:skip
 
-from utils_.event import GroupEvent_,Message_,MessageSegment_
+from utils_.event import GroupEvent_, Message_, MessageSegment_
 
 __fortune_version__ = "v0.4.12"
 __fortune_usages__ = f"""
@@ -67,7 +63,7 @@ show_themes = on_regex("^查看(抽签)?主题$", permission=GROUP, priority=8, 
 
 @show_themes.handle()
 async def _(event: GroupEvent_):
-    gid: str = str(event.group_id)
+    gid: str = str(await G.get_group_id(event))
     theme: str = fortune_manager.get_group_theme(gid)
     await show_themes.finish(f"当前群抽签主题：{FortuneThemesDict[theme][0]}")
 
@@ -85,8 +81,8 @@ async def _(event: GroupEvent_, args: Annotated[Message_, CommandArg()]):
     if "帮助" in arg[-2:]:
         await general_divine.finish(__fortune_usages__)
 
-    gid: str = str(event.group_id)
-    uid: str = str(event.user_id)
+    gid: str = str(await G.get_group_id(event))
+    uid: str = str(event.get_user_id)
 
     is_first, image_file = fortune_manager.divine(gid, uid, None, None)
     if image_file is None:
@@ -147,9 +143,7 @@ async def get_user_arg(matcher: Matcher, args: Annotated[str, RegexStr()]) -> st
 
 
 @change_theme.handle()
-async def _(
-    event: GroupEvent_, user_theme: Annotated[str, Depends(get_user_arg)]
-):
+async def _(event: GroupEvent_, user_theme: Annotated[str, Depends(get_user_arg)]):
     gid: str = str(event.group_id)
 
     for theme in FortuneThemesDict:

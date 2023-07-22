@@ -41,7 +41,7 @@ FortuneThemesDict: Dict[str, List[str]] = {
 
 
 class PluginConfig(BaseModel, extra=Extra.ignore):
-    fortune_path: Path = Path(__file__).parent / "resource"
+    fortune_path: Path = Path("data/fortune")
 
 
 class ThemesFlagConfig(BaseModel, extra=Extra.ignore):
@@ -113,7 +113,7 @@ async def fortune_check() -> None:
         fortune_config.fortune_path.mkdir(parents=True, exist_ok=True)
 
     """Check fonts"""
-    fonts_path: Path = fortune_config.fortune_path / "font"
+    fonts_path: Path = fortune_config.fortune_path.parent / "font"
     if not fonts_path.exists():
         fonts_path.mkdir(parents=True, exist_ok=True)
 
