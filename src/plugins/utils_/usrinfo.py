@@ -52,7 +52,7 @@ class GroupInfo(BaseModel):
         ...
 
     async def get_group_usrinfo_list(self, bot: Bot_, event: GroupEvent_):
-        """获取群主信息"""
+        """获取群聊用户信息"""
         if isinstance(bot, V11Bot) and isinstance(event, V11GroupMessageEvent):
             logger.info("V11")
             msg_list = await bot.get_group_member_list(group_id=event.group_id)
@@ -72,7 +72,7 @@ class GroupInfo(BaseModel):
         else:
             return
         logger.info(msg_list)
-        await a.send(str(msg_list))
+        return msg_list
 
     async def get_group_id(self, event: GroupEvent_):
         """获取群聊组号"""
