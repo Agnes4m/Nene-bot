@@ -78,10 +78,12 @@ class GroupInfo(BaseModel):
         elif isinstance(bot, kaiheilaBot) and isinstance(
             event, kaiheilaChannelMessageEvent
         ):
-            # logger.warning("kook暂不支持获取用户列表")
-            msg_list = await bot.channel_userList(channel_id=event.group_id)
+            if not event.extra.guild_id:
+                return
+            msg_list = await bot.guild_userList(
+                guild_id=event.extra.guild_id, channel_id=event.group_id
+            )
             logger.info(msg_list)
-            return
         elif isinstance(bot, qqguidBot) and isinstance(event, qqguidChannelEvent):
             logger.warning("qq频道暂不支持获取用户列表,to do")
             return

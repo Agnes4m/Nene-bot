@@ -9,7 +9,9 @@ from nonebot.params import CommandArg, Depends, RegexStr
 from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
 from nonebot_plugin_saa import Image, MessageFactory, Text
-from utils_.usrinfo import G
+
+from nene.utils_.event import GroupEvent_, Message_, MessageSegment_
+from nene.utils_.usrinfo import G
 
 from .config import FortuneConfig, FortuneThemesDict
 from .data_source import FortuneManager, fortune_manager
@@ -17,10 +19,9 @@ from .data_source import FortuneManager, fortune_manager
 require("nonebot_plugin_apscheduler")
 from nonebot_plugin_apscheduler import scheduler  # isort:skip
 
-from utils_.event import GroupEvent_, Message_, MessageSegment_
 
 __fortune_version__ = "v0.4.12"
-__fortune_usages__ = f"""
+__fortune_usages__ = """
 [今日运势/抽签/运势] 一般抽签
 [xx抽签]     指定主题抽签
 [指定xx签] 指定特殊角色签底，需要自己尝试哦~

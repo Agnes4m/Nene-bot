@@ -1,6 +1,6 @@
 from io import BytesIO
 from pathlib import Path
-from typing import Any, List, Optional, Union, get_args
+from typing import Optional, Union, get_args
 
 from nonebot.adapters.kaiheila import Bot as kaiheilaBot
 from nonebot.adapters.kaiheila import Message as kaiheilaMessage
@@ -119,7 +119,6 @@ class MessageSender:
         data: Optional[Union[str, bytes, Path, BytesIO]] = None,
         usr_id: Optional[str] = None,
         group_id: Optional[str] = None,
-        reply: bool = False,
     ):
         """主动发送信息
 
@@ -131,7 +130,7 @@ class MessageSender:
             reply (bool): 回复的消息对象,类型是消息事件,无参数则不回复
 
         Returns:
-            _type_: _description_
+            None
         """
         if is_group and group_id:
             if adapter in ["V11", "V12"]:
@@ -156,6 +155,7 @@ class MessageSender:
                 ...
                 # 暂无qq私聊
                 # target = TargetQQGuildChannel(channel_id=int(group_id))
+                return
             else:
                 return
         if text and not data:
@@ -163,9 +163,10 @@ class MessageSender:
         elif not text and data:
             send_msg = MessageFactory([Image(data)])
         elif text and data:
-            send_msg = MessageFactory
-
-        await MessageFactory(send_msg).send(reply=reply)
+            send_msg = MessageFactory([Image(data), Text(text)])
+        else:
+            return
+        await MessageFactory(send_msg).send_to(target)
 
     async def send_pic(
         self,

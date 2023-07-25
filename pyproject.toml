@@ -31,13 +31,13 @@ adapters = [
 plugins = ["nonebot_plugin_apscheduler",
 "nonebot_plugin_userinfo",
 "nonebot-plugin-send-anything-anywhere"]
-plugin_dirs = ["src/plugins"]
+plugin_dirs = ["nene/plugins"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
 nonebot2 = "^2.0.0"
 nonebot-adapter-qqguild = "^0.2.3"
-nonebot-adapter-kaiheila = "^0.2.7"
+nonebot-adapter-kaiheila = "^0.2.8"
 nonebot-adapter-onebot = "^2.2.3"
 nonebot-plugin-apscheduler = "^0.3.0"
 nonebot-plugin-send-anything-anywhere = "^0.2.7"
