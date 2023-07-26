@@ -3,15 +3,31 @@ from pathlib import Path
 from random import randint
 from typing import Optional
 
+from nonebot.log import logger
 from peewee import AutoField, CharField, DateField, IntegerField, Model, SqliteDatabase
 
+# from pydantic import BaseModel
 from .config import BASE, MAX_LUCKY, MULTIPLIER
 from .data_model import SignData
 from .event import MessageEvent_, kaiheilaMessageEvent, qqguidChannelEvent
 
-db_path = Path.home() / ".nene-bot" / "nene.db"
-db_path.parent.mkdir(parents=True, exist_ok=True)
-db = SqliteDatabase(str(db_path))
+
+class SQL:
+    def __init__(self):
+        db_path = Path.home() / ".nene-bot" / "nene.db"
+        db_path.parent.mkdir(parents=True, exist_ok=True)
+        self.db = SqliteDatabase(str(db_path))
+        self.db.connect()
+        logger.debug("宁宁已连接本地数据库")
+
+    def create_tables(self):
+        for i in [DailySign, LoginTable]:
+            if not self.db.table_exists(i):
+                logger.debug(f"创建{i}表格")
+                self.db.create_tables([i], safe=True)
+
+    def __del__(self):
+        self.db.close()
 
 
 class DailySign(Model):
@@ -24,7 +40,7 @@ class DailySign(Model):
     streak = IntegerField(default=0)
 
     class Meta:
-        database = db
+        database = SQL().db
         table_name = "sign"
 
     @classmethod
@@ -135,8 +151,8 @@ class LoginTable(Model):
     Phigros = IntegerField(null=True)
 
     class Meta:
-        table = db
-        table_description = "login"
+        database = SQL().db
+        table_name = "login"
 
     @classmethod
     async def create_msg(
@@ -183,7 +199,5 @@ class LoginTable(Model):
         return True
 
 
-# 创建数据库
-for i in [DailySign, LoginTable]:
-    if not db.table_exists(i):
-        db.create_tables([i], safe=True)
+SQL.create_tables
+sql = SQL()
