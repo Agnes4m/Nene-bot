@@ -98,11 +98,14 @@ class GroupInfo(BaseModel):
             event,
             V11GroupMessageEvent | V12GroupMessageEvent | kaiheilaChannelMessageEvent,
         ):
-            return int(event.group_id)
+            msg = int(event.group_id)
         elif isinstance(event, qqguidChannelEvent):
-            return event.guild_id
+            msg = event.guild_id
         else:
-            return None
+            msg = None
+        if msg is None:
+            msg = 114514
+        return msg
 
 
 class UsrInfo(BaseModel):

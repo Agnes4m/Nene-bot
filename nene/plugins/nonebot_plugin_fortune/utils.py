@@ -64,8 +64,8 @@ def drawing(gid: str, uid: str, theme: str, spec_path: Optional[str] = None) -> 
     color = "#F5F5F5"
     image_font_center = [140, 99]
     fontPath = {
-        "title": f"{fortune_config.fortune_path}/font/Mamelon.otf",
-        "text": f"{fortune_config.fortune_path}/font/sakura.ttf",
+        "title": f"{fortune_config.fortune_path.parent}/font/Mamelon.otf",
+        "text": f"{fortune_config.fortune_path.parent}/font/sakura.ttf",
     }
     ttfront = ImageFont.truetype(fontPath["title"], font_size)
     font_length = ttfront.getsize(title)
@@ -103,6 +103,8 @@ def drawing(gid: str, uid: str, theme: str, spec_path: Optional[str] = None) -> 
     if not outDir.exists():
         outDir.mkdir(exist_ok=True, parents=True)
 
+    print(gid)
+    print(uid)
     outPath = outDir / f"{gid}_{uid}.png"
 
     img.save(outPath)

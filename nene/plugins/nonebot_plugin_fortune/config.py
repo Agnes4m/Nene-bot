@@ -198,7 +198,6 @@ async def fortune_check() -> None:
 
     _flag: bool = False
     if not group_rules_path.exists():
-        # In version 0.4.x, compatible job will be done automatically if group_rules.json doesn't exist
         if fortune_setting_path.exists():
             # Try to transfer from the old setting json
             ret = group_rules_transfer(fortune_setting_path, group_rules_path)
@@ -231,7 +230,7 @@ async def fortune_check() -> None:
             # Try to download it from repo
             ret = await download_resource(specific_rules_path, "specific_rules.json")
             if ret:
-                logger.info(f"Downloaded specific_rules.json from repo")
+                logger.info("Downloaded specific_rules.json from repo")
             else:
                 # If failed, initialize specific_rules.json instead
                 with specific_rules_path.open("w", encoding="utf-8") as f:
