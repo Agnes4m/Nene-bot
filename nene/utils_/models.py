@@ -6,11 +6,19 @@ from datetime import date, timedelta
 from nonebot.log import logger
 from peewee import Model, AutoField, CharField, DateField, IntegerField, SqliteDatabase
 
+from nene.utils_.event import (
+    MessageEvent_,
+    V11MessageEvent,
+    V12MessageEvent,
+    qqguidChannelEvent,
+    qqguidMessageEvent,
+    kaiheilaMessageEvent,
+)
+
 from .data_model import SignData
 
 # from pydantic import BaseModel
 from .config import BASE, MAX_LUCKY, MULTIPLIER
-from .event import MessageEvent_, qqguidChannelEvent, kaiheilaMessageEvent
 
 
 class SQL:
@@ -83,7 +91,7 @@ class DailySign(Model):
         )
 
     @classmethod
-    async def get_last_sign(cls, user_id: int) -> date:
+    async def get_last_sign(cls, user_id: int, event: MessageEvent_) -> date:
         """
         :说明: `get_last_sign`
         > 获取最近的签到日期
@@ -156,48 +164,86 @@ class LoginTable(Model):
         table_name = "login"
 
     @classmethod
-    async def create_msg(
+    async def create_login(
         cls,
-        user_id: int,
         event: MessageEvent_,
-        ex_mode: Optional[str] = None,
-        ex_number: Optional[int] = None,
+        platform: Optional[str] = None,
+        account_number: Optional[int] = None,
     ):
         """绑定平台或qq
-
+        绑定qq114514
+        绑定b站1145114
         Args:
-            user_id (int): 事件对象id
-            event (MessageEvent_): 消息事件
-            ex_mode (Optional[str], optional): 信息中str字段. Defaults to None.
-            ex_number (Optional[int], optional): 信息中Int字段. Defaults to None.
+            event (MessageEvent): 消息事件
+            platform (Optional[str], optional): 平台名称. Defaults to None.
+            account_number (Optional[int], optional): 账号数字. Defaults to None.
 
         Returns:
-            bool: _description_
+            bool: 返回是否绑定成功
         """
-        if not ex_mode and not ex_number:
-            """qq绑定"""
-            await LoginTable.get_or_create(qq=user_id)
-        elif ex_mode and ex_number:
-            if ex_mode in ["qq", "QQ"]:
-                """为当前平台绑定"""
-                login = await LoginTable.get_or_none(qq=ex_number)
-                if not login:
-                    return False
-                if isinstance(event, kaiheilaMessageEvent):
-                    login.kook = int(event.user_id)
-                elif isinstance(event, qqguidChannelEvent):
-                    login.qqguild = int(event.get_user_id())
+        if not platform and not account_number:
+            # 进行qq绑定
+            LoginTable.get_or_create(qq=event.get_user_id())
+            return True
+        elif platform and account_number:
+            platform = platform.lower()
+            login = LoginTable.get_or_none(qq=event.get_user_id())
+            if not login:
+                return False
+
+            if platform in ["qq"]:
+                # 为当前平台绑定
+                login.kook = (
+                    int(event.user_id)
+                    if isinstance(event, kaiheilaMessageEvent)
+                    else None
+                )
+                login.qqguild = (
+                    int(event.get_user_id())
+                    if isinstance(event, qqguidChannelEvent)
+                    else None
+                )
             else:
-                """为其他账户绑定"""
-                login = await LoginTable.get_or_none(qq=user_id)
-                if not login:
-                    return False
-                if ex_mode in "bilibilib站B站":
-                    login.Bilibili = int(ex_number)
-                elif ex_mode in "Arcaearcaea":
-                    login.Arcaea = int(ex_number)
-            await login.save()
-        return True
+                # 为其他账户绑定
+                if platform in ["bilibili", "b站"]:
+                    login.Bilibili = int(account_number)
+                elif platform in ["arcaea"]:
+                    login.Arcaea = int(account_number)
+                else:
+                    return False  # 不支持的平台名称
+
+            try:
+                await login.save()
+                return True
+            except Exception as e:
+                print(f"Error saving login details: {e}")
+                return False
+
+        return False  # 参数不完整，无法执行绑定
+
+    @classmethod
+    async def get_user_info(cls, event: MessageEvent_):
+        # 查询指定 QQ 号或 Kook 号或 QQ Guild 号的用户绑定信息
+        try:
+            if isinstance(event, (V11MessageEvent, V12MessageEvent)):
+                qq = int(event.user_id)
+                user: LoginTable = await LoginTable.get_or_none(LoginTable.qq == qq)
+            elif isinstance(event, kaiheilaMessageEvent):
+                kook = int(event.user_id)
+                user: LoginTable = await LoginTable.get_or_none(LoginTable.kook == kook)
+            elif isinstance(event, qqguidMessageEvent):
+                qqguild = int(event.get_user_id())
+                user: LoginTable = await LoginTable.get_or_none(
+                    LoginTable.qqguild == qqguild
+                )
+            else:
+                return None
+            if not isinstance(user, LoginTable):
+                return None
+            return user
+        except Exception as e:
+            logger.warning(e)
+            return None
 
 
 SQL.create_tables

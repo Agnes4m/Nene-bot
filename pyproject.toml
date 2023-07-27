@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "Nene"
-version = "2.0.0"
+version = "0.0.1"
 description = "跨适配器的通用全功能机器人"
 authors = ["Agnes Digital <Z735803792@163.com>"]
 license = "AGPL"
