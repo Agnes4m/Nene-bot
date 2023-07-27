@@ -1,48 +1,48 @@
 from io import BytesIO
 from pathlib import Path
-from typing import Optional, Union, get_args
+from typing import Union, Optional, get_args
 
+from nonebot.adapters.onebot.v11 import Bot as V11Bot
+from nonebot.adapters.onebot.v12 import Bot as V12Bot
+from nonebot.adapters.qqguild import Bot as qqguidBot
 from nonebot.adapters.kaiheila import Bot as kaiheilaBot
+from nonebot.adapters.onebot.v11 import Message as V11Message
+from nonebot.adapters.onebot.v12 import Message as V12Message
+from nonebot.adapters.qqguild import Message as qqguidMessage
 from nonebot.adapters.kaiheila import Message as kaiheilaMessage
+from nonebot.adapters.qqguild import ChannelEvent as qqguidChannelEvent
+from nonebot.adapters.onebot.v11 import MessageSegment as V11MessageSegment
+from nonebot.adapters.onebot.v11.event import NoticeEvent as V11NoticeEvent
+from nonebot.adapters.onebot.v12 import MessageSegment as V12MessageSegment
+from nonebot.adapters.onebot.v12.event import NoticeEvent as V12NoticeEvent
+from nonebot.adapters.qqguild import MessageSegment as qqguidMessageSegment
+from nonebot.adapters.onebot.v11.event import MessageEvent as V11MessageEvent
+from nonebot.adapters.onebot.v12.event import MessageEvent as V12MessageEvent
+from nonebot.adapters.qqguild.event import MessageEvent as qqguidMessageEvent
 from nonebot.adapters.kaiheila import MessageSegment as kaiheilaMessageSegment
+from nonebot.adapters.kaiheila.event import NoticeEvent as kaiheilaNoticeEvent
+from nonebot.adapters.kaiheila.event import MessageEvent as kaiheilaMessageEvent
+from nonebot.adapters.onebot.v11 import GroupMessageEvent as V11GroupMessageEvent
+from nonebot.adapters.onebot.v12 import GroupMessageEvent as V12GroupMessageEvent
+from nonebot.adapters.onebot.v11.event import PrivateMessageEvent as V11PrivateEvent
+from nonebot.adapters.onebot.v12.event import PrivateMessageEvent as V12PrivateEvent
+from nonebot.adapters.kaiheila.event import PrivateMessageEvent as KaiheilaPrivateEvent
 from nonebot.adapters.kaiheila.event import (
     ChannelMessageEvent as kaiheilaChannelMessageEvent,
 )
-from nonebot.adapters.kaiheila.event import MessageEvent as kaiheilaMessageEvent
-from nonebot.adapters.kaiheila.event import NoticeEvent as kaiheilaNoticeEvent
-from nonebot.adapters.kaiheila.event import PrivateMessageEvent as KaiheilaPrivateEvent
-from nonebot.adapters.onebot.v11 import Bot as V11Bot
-from nonebot.adapters.onebot.v11 import GroupMessageEvent as V11GroupMessageEvent
-from nonebot.adapters.onebot.v11 import Message as V11Message
-from nonebot.adapters.onebot.v11 import MessageSegment as V11MessageSegment
-from nonebot.adapters.onebot.v11.event import MessageEvent as V11MessageEvent
-from nonebot.adapters.onebot.v11.event import NoticeEvent as V11NoticeEvent
-from nonebot.adapters.onebot.v11.event import PrivateMessageEvent as V11PrivateEvent
-from nonebot.adapters.onebot.v12 import Bot as V12Bot
-from nonebot.adapters.onebot.v12 import GroupMessageEvent as V12GroupMessageEvent
-from nonebot.adapters.onebot.v12 import Message as V12Message
-from nonebot.adapters.onebot.v12 import MessageSegment as V12MessageSegment
-from nonebot.adapters.onebot.v12.event import MessageEvent as V12MessageEvent
-from nonebot.adapters.onebot.v12.event import NoticeEvent as V12NoticeEvent
-from nonebot.adapters.onebot.v12.event import PrivateMessageEvent as V12PrivateEvent
-from nonebot.adapters.qqguild import Bot as qqguidBot
-from nonebot.adapters.qqguild import ChannelEvent as qqguidChannelEvent
-from nonebot.adapters.qqguild import Message as qqguidMessage
-from nonebot.adapters.qqguild import MessageSegment as qqguidMessageSegment
-from nonebot.adapters.qqguild.event import MessageEvent as qqguidMessageEvent
 
 # from nonebot.internal.adapter import Bot, Event
 from nonebot_plugin_saa import (
+    Text,
     Image,
     Mention,
+    TargetQQGroup,
     MessageFactory,
+    TargetQQPrivate,
+    TargetOB12Unknow,
+    TargetQQGuildChannel,
     TargetKaiheilaChannel,
     TargetKaiheilaPrivate,
-    TargetOB12Unknow,
-    TargetQQGroup,
-    TargetQQGuildChannel,
-    TargetQQPrivate,
-    Text,
 )
 
 # from nonebot_plugin_saa.utils.types import TMSF
@@ -93,7 +93,7 @@ class MessageSender:
 
     async def send_text(
         self, msg: str, usr_id: str | bool = False, reply: bool = False
-    ):
+    ):  # noqa: E501
         """发送文字信息
 
         Args:
@@ -158,6 +158,8 @@ class MessageSender:
                 return
             else:
                 return
+        else:
+            return
         if text and not data:
             send_msg = MessageFactory(text)
         elif not text and data:

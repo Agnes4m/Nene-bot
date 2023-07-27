@@ -1,11 +1,11 @@
 import json
-from datetime import date, datetime
 from pathlib import Path
+from datetime import date, datetime
 from typing import Any, Dict, List, Union
 
 from nonebot import get_driver
 from nonebot.log import logger
-from pydantic import BaseModel, Extra, root_validator
+from pydantic import Extra, BaseModel, root_validator
 
 from .download import ResourceError, download_resource
 
@@ -23,7 +23,7 @@ FortuneThemesDict: Dict[str, List[str]] = {
     "einstein": ["爱因斯坦携爱敬上", "爱因斯坦", "einstein", "Einstein"],
     "genshin": ["原神", "Genshin Impact", "genshin", "Genshin", "op", "原批"],
     "granblue_fantasy": ["碧蓝幻想", "Granblue Fantasy", "granblue fantasy", "幻想"],
-    "hololive": ["Hololive", "hololive", "Vtb", "vtb", "管人", "Holo", "holo", "管人痴"],
+    "hololive": ["Hololive", "hololive", "Vtb", "vtb", "管人", "holo", "管人痴"],
     "hoshizora": ["星空列车与白的旅行", "星空列车"],
     "liqingge": ["李清歌", "清歌"],
     "onmyoji": ["阴阳师", "yys", "Yys", "痒痒鼠"],
@@ -128,7 +128,7 @@ async def fortune_check() -> None:
 	"""
     copywriting_path: Path = (
         fortune_config.fortune_path / "fortune" / "copywriting.json"
-    )
+    )  # noqa: E501
     if not copywriting_path.parent.exists():
         copywriting_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -151,7 +151,6 @@ async def fortune_check() -> None:
             json.dump(dict(), f, ensure_ascii=False, indent=4)
     else:
         """
-        In version 0.4.10, the format of fortune_data.json is changed from v0.4.9 and older.
         1. Remove useless keys "gid", "uid" and "nickname"
         2. Transfer the key "is_divined" to "last_sign_date"
         """
@@ -164,7 +163,6 @@ async def fortune_check() -> None:
             if _data[gid]:
                 for uid in _data[gid]:
                     """
-                    From this time, if is_divined is False, don't care the last sign-in date.
                     Otherwise, the last sign-in date is TODAY.
                     """
                     try:
@@ -202,19 +200,23 @@ async def fortune_check() -> None:
             # Try to transfer from the old setting json
             ret = group_rules_transfer(fortune_setting_path, group_rules_path)
             if ret:
-                logger.info("旧版 fortune_setting.json 文件中群聊抽签主题设置已更新至 group_rules.json")
+                logger.info(
+                    "旧版 fortune_setting.json 文件中群聊抽签主题设置已更新至 group_rules.json"  # noqa: E501
+                )  # noqa: E501
                 _flag = True
 
         if not _flag:
-            # If failed or fortune_setting_path doesn't exist, initialize group_rules.json instead
+            # If failed or fortune_setting_path doesn't exist, initialize group_rules.json instead  # noqa: E501
             with group_rules_path.open("w", encoding="utf-8") as f:
                 json.dump(dict(), f, ensure_ascii=False, indent=4)
 
-            logger.info("旧版 fortune_setting.json 文件中群聊抽签主题设置不存在，初始化 group_rules.json")
+            logger.info(
+                "旧版 fortune_setting.json 文件中群聊抽签主题设置不存在，初始化 group_rules.json"  # noqa: E501
+            )  # noqa: E501
 
     _flag = False
     if not specific_rules_path.exists():
-        # In version 0.4.9 and 0.4.10, data transfering will be done automatically if specific_rules.json doesn't exist
+        # In version 0.4.9 and 0.4.10, data transfering will be done automatically if specific_rules.json doesn't exist  # noqa: E501
         if fortune_setting_path.exists():
             # Try to transfer from the old setting json
             ret = specific_rules_transfer(fortune_setting_path, specific_rules_path)
@@ -222,7 +224,9 @@ async def fortune_check() -> None:
                 # Delete the old fortune_setting json if the transfer is OK
                 fortune_setting_path.unlink()
 
-                logger.info("旧版 fortune_setting.json 文件中签底指定规则已更新至 specific_rules.json")
+                logger.info(
+                    "旧版 fortune_setting.json 文件中签底指定规则已更新至 specific_rules.json"  # noqa: E501
+                )
                 logger.warning("指定签底抽签功能将在 v0.5.0 弃用")
                 _flag = True
 
@@ -237,7 +241,7 @@ async def fortune_check() -> None:
                     json.dump(dict(), f, ensure_ascii=False, indent=4)
 
                 logger.info(
-                    "旧版 fortune_setting.json 文件中签底指定规则不存在，初始化 specific_rules.json"
+                    "旧版 fortune_setting.json 文件中签底指定规则不存在，初始化 specific_rules.json"  # noqa: E501
                 )
                 logger.warning("指定签底抽签功能将在 v0.5.0 弃用")
 
@@ -262,7 +266,7 @@ def group_rules_transfer(fortune_setting_dir: Path, group_rules_dir: Path) -> bo
 
 def specific_rules_transfer(
     fortune_setting_dir: Path, specific_rules_dir: Path
-) -> bool:
+) -> bool:  # noqa: E501
     """
     Transfer the specific_rule in fortune_setting.json to specific_rules.json
     """

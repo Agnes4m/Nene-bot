@@ -1,21 +1,21 @@
 from typing import Annotated
 
-from nonebot import on_command, on_fullmatch, on_regex, require
+from nonebot.log import logger
+from nonebot.matcher import Matcher
+from nonebot.permission import SUPERUSER
+from nonebot.plugin import PluginMetadata
+from nonebot.params import Depends, RegexStr, CommandArg
+from nonebot_plugin_saa import Text, Image, MessageFactory
+from nonebot import require, on_regex, on_command, on_fullmatch
 from nonebot.adapters.onebot.v11 import GROUP_ADMIN, GROUP_OWNER
 from nonebot.adapters.qqguild.permission import (
     GUILD_ADMIN,
-    GUILD_CHANNEL_ADMIN,
     GUILD_OWNER,
+    GUILD_CHANNEL_ADMIN,
 )
-from nonebot.log import logger
-from nonebot.matcher import Matcher
-from nonebot.params import CommandArg, Depends, RegexStr
-from nonebot.permission import SUPERUSER
-from nonebot.plugin import PluginMetadata
-from nonebot_plugin_saa import Image, MessageFactory, Text
 
-from nene.utils_.event import GroupEvent_, Message_
 from nene.utils_.usrinfo import G
+from nene.utils_.event import Message_, GroupEvent_
 
 from .config import FortuneConfig, FortuneThemesDict
 from .data_source import FortuneManager, fortune_manager
@@ -46,7 +46,7 @@ __plugin_meta__ = PluginMetadata(
     description="抽签！占卜你的今日运势🙏",
     usage=__fortune_usages__,
     type="application",
-    homepage="https://github.com/MinatoAquaCrews/nonebot_plugin_fortune",
+    homepage="https://github.com/Agnes4m/nonebot_plugin_fortune",
     config=FortuneConfig,
     extra={
         "author": "KafCoppelia <k740677208@gmail.com>",
@@ -103,7 +103,9 @@ async def _(event: GroupEvent_, args: Annotated[Message_, CommandArg()]):
         await general_divine.finish("今日运势生成出错……")
 
     if not is_first:
-        msg = MessageFactory([Text("你今天抽过签了，再给你看一次哦🤗\n"), Image(image_file)])
+        msg = MessageFactory(
+            [Text("你今天抽过签了，再给你看一次哦🤗\n"), Image(image_file)]
+        )  # noqa: E501)
     else:
         logger.info(f"User {uid} | Group {gid} 占卜了今日运势")
         msg = MessageFactory([Text("✨今日运势✨\n"), Image(image_file)])
@@ -134,7 +136,7 @@ async def _(
                 if not is_first:
                     msg = MessageFactory(
                         [Text("你今天抽过签了，再给你看一次哦🤗\n"), Image(image_file)]
-                    )
+                    )  # noqa: E501)
                 else:
                     logger.info(f"User {uid} | Group {gid} 占卜了今日运势")
                     msg = MessageFactory([Text("✨今日运势✨\n"), Image(image_file)])
@@ -180,14 +182,18 @@ async def _(event: GroupEvent_, limit: Annotated[str, Depends(get_user_arg)]):
     else:
         spec_path = fortune_manager.specific_check(limit)
         if not spec_path:
-            await MessageFactory("还不可以指定这种签哦，请确认该签底对应主题开启或图片路径存在~").finish()
+            await MessageFactory(
+                "还不可以指定这种签哦，请确认该签底对应主题开启或图片路径存在~"
+            ).finish()  # noqa: E501
         else:
             is_first, image_file = fortune_manager.divine(gid, uid, None, spec_path)
             if image_file is None:
                 await MessageFactory("今日运势生成出错……").finish()
 
     if not is_first:
-        msg = MessageFactory([Text("你今天抽过签了，再给你看一次哦🤗\n"), Image(image_file)])
+        msg = MessageFactory(
+            [Text("你今天抽过签了，再给你看一次哦🤗\n"), Image(image_file)]
+        )  # noqa: E501)
     else:
         logger.info(f"User {uid} | Group {gid} 占卜了今日运势")
         msg = MessageFactory([Text("✨今日运势✨\n"), Image(image_file)])

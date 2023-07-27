@@ -38,7 +38,6 @@ async def download_resource(
 ) -> bool:
     """
     Try to download resources, json but not images.
-    For fonts & copywriting, download and save into files when missing. Otherwise, raise ResourceError.
     """
     base_url: str = "https://ghproxy.com/https://github.com/MinatoAquaCrews/nonebot_plugin_fortune/master/nonebot_plugin_fortune/resource"
 
@@ -54,7 +53,7 @@ async def download_resource(
             version: float = resp.get("version", 0)
             logger.info(
                 f"Got the latest copywriting.json from repo, version: {version}"
-            )
+            )  # noqa: E501
 
         return True
 

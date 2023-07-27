@@ -13,5 +13,10 @@
     "--profile",
     "black"
   ],
-  "python.formatting.provider": "black"
+  "python.formatting.provider": "black",
+  "python.formatting.blackArgs": [
+    "--line_length",
+    "88",
+    "--skip-string-normalization"
+  ]
 }

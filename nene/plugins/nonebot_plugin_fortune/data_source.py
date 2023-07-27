@@ -1,11 +1,11 @@
 import json
 import random
-from datetime import date, datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union
+from datetime import date, datetime
+from typing import Dict, List, Tuple, Union, Optional
 
-from .config import DateTimeEncoder, FortuneThemesDict, fortune_config
 from .utils import drawing, theme_flag_check
+from .config import DateTimeEncoder, FortuneThemesDict, fortune_config
 
 
 class FortuneManager:

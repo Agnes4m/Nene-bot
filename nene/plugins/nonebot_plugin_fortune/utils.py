@@ -1,7 +1,7 @@
 import json
 import random
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Tuple, Optional
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -68,7 +68,7 @@ def drawing(gid: str, uid: str, theme: str, spec_path: Optional[str] = None) -> 
         "text": f"{fortune_config.fortune_path.parent}/font/sakura.ttf",
     }
     ttfront = ImageFont.truetype(fontPath["title"], font_size)
-    font_length = ttfront.getsize(title)
+    font_length = ttfront.getsize(title)  # type: ignore
     draw.text(
         (
             image_font_center[0] - font_length[0] / 2,
