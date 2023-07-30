@@ -1,56 +1,57 @@
+import asyncio
+from datetime import date, timedelta
 from pathlib import Path
 from random import randint
 from typing import Optional
-from datetime import date, timedelta
 
 from nonebot.log import logger
-from peewee import Model, AutoField, CharField, DateField, IntegerField, SqliteDatabase
+from tortoise import Tortoise, fields
+from tortoise.models import Model
 
 from nene.utils_.event import (
     MessageEvent_,
     V11MessageEvent,
     V12MessageEvent,
+    kaiheilaMessageEvent,
     qqguidChannelEvent,
     qqguidMessageEvent,
-    kaiheilaMessageEvent,
 )
-
-from .data_model import SignData
 
 # from pydantic import BaseModel
 from .config import BASE, MAX_LUCKY, MULTIPLIER
+from .data_model import SignData
 
 
 class SQL:
-    def __init__(self):
+    async def __init__(self):
         db_path = Path.home() / ".nene-bot" / "nene.db"
         db_path.parent.mkdir(parents=True, exist_ok=True)
-        self.db = SqliteDatabase(str(db_path))
-        self.db.connect()
+        self.db_path = str(db_path)
+        self._init_db = Tortoise.init(
+            db_url=f'sqlite:///{self.db_path}', modules={'models': ['models']}
+        )
         logger.debug("宁宁已连接本地数据库")
 
-    def create_tables(self):
-        for i in [DailySign, LoginTable]:
-            if not self.db.table_exists(i):
-                logger.debug(f"创建{i}表格")
-                self.db.create_tables([i], safe=True)
+    async def create_table(self):
+        await Tortoise.generate_schemas()
+
+    async def close_db(self):
+        await Tortoise.close_connections()
 
     def __del__(self):
-        self.db.close()
+        asyncio.run(self.close_db())
 
 
 class DailySign(Model):
-    id = AutoField()
-    user_id = IntegerField()
-    name = CharField()
-    gold = IntegerField(default=0)
-    sign_times = IntegerField(default=0)
-    last_sign = DateField(default=date(2000, 1, 1))
-    streak = IntegerField(default=0)
+    id = fields.IntField(pk=True)
+    user_id = fields.IntField()
+    gold = fields.IntField(default=0)
+    sign_times = fields.IntField(default=0)
+    last_sign = fields.DateField(default=date(2000, 1, 1))
+    streak = fields.IntField(default=0)
 
     class Meta:
-        database = SQL().db
-        table_name = "sign"
+        table = "sign"
 
     @classmethod
     async def sign_in(cls, user_id: int) -> SignData:
@@ -149,19 +150,18 @@ class DailySign(Model):
 
 
 class LoginTable(Model):
-    id = AutoField()
-    qq = IntegerField(null=True)
-    qqguild = IntegerField(null=True)
-    kook = IntegerField(null=True)
-    Telegram = IntegerField(null=True)
-    Discord = IntegerField(null=True)
-    Bilibili = IntegerField(null=True)
-    Arcaea = IntegerField(null=True)
-    Phigros = IntegerField(null=True)
+    id = fields.IntField(pk=True)
+    qq = fields.IntField(null=True)
+    qqguild = fields.IntField(null=True)
+    kook = fields.IntField(null=True)
+    Telegram = fields.IntField(null=True)
+    Discord = fields.IntField(null=True)
+    Bilibili = fields.IntField(null=True)
+    Arcaea = fields.IntField(null=True)
+    Phigros = fields.IntField(null=True)
 
     class Meta:
-        database = SQL().db
-        table_name = "login"
+        table = "login"
 
     @classmethod
     async def create_login(
@@ -183,12 +183,12 @@ class LoginTable(Model):
         """
         if not platform and not account_number:
             # 进行qq绑定
-            LoginTable.get_or_create(qq=event.get_user_id())
+            await LoginTable.get_or_create(qq=event.get_user_id())
             return True
         elif platform and account_number:
             platform = platform.lower()
-            login = LoginTable.get_or_none(qq=event.get_user_id())
-            if not login:
+            login = await LoginTable.get_or_none(qq=event.get_user_id())
+            if login is None:
                 return False
 
             if platform in ["qq"]:
@@ -227,24 +227,20 @@ class LoginTable(Model):
         try:
             if isinstance(event, (V11MessageEvent, V12MessageEvent)):
                 qq = int(event.user_id)
-                user: LoginTable = await LoginTable.get_or_none(LoginTable.qq == qq)
+                user = await LoginTable.get_or_none(qq=qq)
             elif isinstance(event, kaiheilaMessageEvent):
                 kook = int(event.user_id)
-                user: LoginTable = await LoginTable.get_or_none(LoginTable.kook == kook)
+                user = await LoginTable.get_or_none(kook=kook)
             elif isinstance(event, qqguidMessageEvent):
                 qqguild = int(event.get_user_id())
-                user: LoginTable = await LoginTable.get_or_none(
-                    LoginTable.qqguild == qqguild
-                )
+                user = await LoginTable.get_or_none(qqguild=qqguild)
             else:
                 return None
-            if not isinstance(user, LoginTable):
-                return None
+
             return user
         except Exception as e:
             logger.warning(e)
             return None
 
 
-SQL.create_tables
 sql = SQL()
