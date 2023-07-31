@@ -102,9 +102,12 @@ class DailySign(Model):
         :返回:
           - `date`: 签到日期
         """
-        record, _ = await DailySign.get_or_create(
-            user_id=user_id,
-        )
+        try:
+            record, _ = await DailySign.get_or_create(
+                user_id=user_id,
+            )
+        except Exception:
+            record, _ = await DailySign.get_or_create(user_id=user_id, name="无名氏")
         return record.last_sign
 
     @classmethod
