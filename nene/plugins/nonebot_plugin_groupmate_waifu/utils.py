@@ -1,6 +1,6 @@
+import io
 import asyncio
 import hashlib
-import io
 from typing import List
 
 import httpx
@@ -47,7 +47,8 @@ async def user_img(user_id: int) -> bytes:
     data = await download_url(url)
     if hashlib.md5(data).hexdigest() == "acef72340ac0e914090bd35799f5594e":
         url = f"http://q1.qlogo.cn/g?b=qq&nk={user_id}&s=100"
-    return url
+    data = await download_url(url)
+    return data
 
 
 def text_to_png(msg):
