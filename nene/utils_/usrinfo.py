@@ -37,6 +37,7 @@ class GroupInfo(BaseModel):
         elif isinstance(bot, V12Bot) and isinstance(event, V12GroupMessageEvent):
             logger.info("V12")
             msg_list = await bot.get_group_member_list(group_id=event.group_id)
+            msg_list  = list(map(lambda usr: usr.__dict__, msg_list))
         elif isinstance(bot, kaiheilaBot) and isinstance(
             event, kaiheilaChannelMessageEvent
         ):
@@ -45,6 +46,9 @@ class GroupInfo(BaseModel):
             msg_list = await bot.guild_userList(
                 guild_id=event.extra.guild_id, channel_id=event.group_id
             )
+            if not msg_list.users:
+                return 
+            msg_list  = list(map(lambda usr: usr.__dict__, msg_list.users))
             logger.info(msg_list)
         elif isinstance(bot, qqguidBot) and isinstance(event, qqguidChannelEvent):
             logger.warning("qq频道暂不支持获取用户列表,to do")
