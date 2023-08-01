@@ -3,14 +3,14 @@
 # from peewee import SqliteDatabase
 from nonebot import get_driver
 
-from nene.utils_.models import sql
+from nene.utils_.sql import sql
 
 driver = get_driver()
 
 
 @driver.on_startup
 async def _():
-    sql.create_tables()
+    await sql.create_table()
 
 
 @driver.on_shutdown

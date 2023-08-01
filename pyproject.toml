@@ -54,7 +54,7 @@ nonebot_plugin_userinfo = "0.0.2"
 pillow = "^9.0.0"
 httpx = "^0.24.0"
 aiofiles = ">=0.8.0"
-peewee = "^3.16.2"
+tortoise-orm = "^0.19.3"
 
 [tool.poetry.scripts]
 check = "pre-commit run --all-files"
