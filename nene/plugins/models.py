@@ -7,10 +7,10 @@ from tortoise.models import Model
 
 from nene.utils_.event import (
     MessageEvent_,
-    V11MessageEvent,
-    V12MessageEvent,
-    kaiheilaMessageEvent,
-    qqguidMessageEvent,
+    V11MEvent,
+    V12MEvent,
+    kaiheilaMEvent,
+    qqguidMEvent,
 )
 
 from .sign import BASE, MAX_LUCKY, MULTIPLIER, SignData
@@ -42,11 +42,11 @@ class LoginTable(Model):
     async def which_adapter(cls, event: MessageEvent_):
         """判断是否存在绑定信息,正确返回全部信息,否则为None"""
         usr_id = event.get_user_id()
-        if isinstance(event, Union[V11MessageEvent, V12MessageEvent]):
+        if isinstance(event, Union[V11MEvent, V12MEvent]):
             login_msg = await cls.get_or_none(qq=usr_id)
-        elif isinstance(event, kaiheilaMessageEvent):
+        elif isinstance(event, kaiheilaMEvent):
             login_msg = await cls.get_or_none(kook=usr_id)
-        elif isinstance(event, qqguidMessageEvent):
+        elif isinstance(event, qqguidMEvent):
             login_msg = await cls.get_or_none(qqguild=usr_id)
         else:
             login_msg = None
@@ -55,11 +55,11 @@ class LoginTable(Model):
     @classmethod
     async def which_adapter_id(cls, event: MessageEvent_):
         usr_id = event.get_user_id()
-        if isinstance(event, Union[V11MessageEvent, V12MessageEvent]):
+        if isinstance(event, Union[V11MEvent, V12MEvent]):
             login_msg = await cls.get_or_none(qq=usr_id)
-        elif isinstance(event, kaiheilaMessageEvent):
+        elif isinstance(event, kaiheilaMEvent):
             login_msg = await cls.get_or_none(kook=usr_id)
-        elif isinstance(event, qqguidMessageEvent):
+        elif isinstance(event, qqguidMEvent):
             login_msg = await cls.get_or_none(qqguild=usr_id)
         else:
             login_msg = None
@@ -73,11 +73,11 @@ class LoginTable(Model):
         if not usr_id:
             usr_id = event.get_user_id()
         print(usr_id)
-        if isinstance(event, Union[V11MessageEvent, V12MessageEvent]):
+        if isinstance(event, Union[V11MEvent, V12MEvent]):
             login_msg, _ = await cls.get_or_create(qq=usr_id)
-        elif isinstance(event, kaiheilaMessageEvent):
+        elif isinstance(event, kaiheilaMEvent):
             login_msg, _ = await cls.get_or_create(kook=usr_id)
-        elif isinstance(event, qqguidMessageEvent):
+        elif isinstance(event, qqguidMEvent):
             login_msg, _ = await cls.get_or_create(qqguild=usr_id)
         return login_msg
 

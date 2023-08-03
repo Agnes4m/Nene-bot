@@ -11,13 +11,12 @@ from pydantic import BaseModel
 from .event import (
     Bot_,
     GroupEvent_,
-    MessageEvent_,
     V11Bot,
-    V11GroupMessageEvent,
+    V11GMEvent,
     V12Bot,
-    V12GroupMessageEvent,
+    V12GMEvent,
     kaiheilaBot,
-    kaiheilaChannelMessageEvent,
+    kaiheilaCMEvent,
     qqguidBot,
     qqguidChannelEvent,
 )
@@ -66,14 +65,14 @@ class GroupInfo(BaseModel):
     async def get_group_usrinfo_list(self, bot: Bot_, event: GroupEvent_):
         """获取群聊用户信息"""
         msg_list: List[UserInfo] = []
-        if isinstance(bot, V11Bot) and isinstance(event, V11GroupMessageEvent):
+        if isinstance(bot, V11Bot) and isinstance(event, V11GMEvent):
             logger.info("V11")
             msg_lists = await bot.get_group_member_list(group_id=event.group_id)
             for one_msg in msg_lists:
                 msg = await get_user_info(bot, event, one_msg["user_id"])
                 if msg:
                     msg_list.append(msg)
-        elif isinstance(bot, V12Bot) and isinstance(event, V12GroupMessageEvent):
+        elif isinstance(bot, V12Bot) and isinstance(event, V12GMEvent):
             logger.info("V12")
             msg_lists = await bot.get_group_member_list(group_id=event.group_id)
             for one_msg in msg_lists:
@@ -82,7 +81,7 @@ class GroupInfo(BaseModel):
                     msg_list.append(msg)
         elif isinstance(bot, kaiheilaBot) and isinstance(
             event,
-            kaiheilaChannelMessageEvent,
+            kaiheilaCMEvent,
         ):
             if not event.extra.guild_id:
                 return None
@@ -111,9 +110,9 @@ class GroupInfo(BaseModel):
         if isinstance(
             event,
             Union[
-                V11GroupMessageEvent,
-                V12GroupMessageEvent,
-                kaiheilaChannelMessageEvent,
+                V11GMEvent,
+                V12GMEvent,
+                kaiheilaCMEvent,
             ],
         ):
             msg = int(event.group_id)
@@ -126,25 +125,4 @@ class GroupInfo(BaseModel):
         return msg
 
 
-class UsrInfo(BaseModel):
-    def __init__(self):
-        ...
-
-    async def get_user_id(self, event: MessageEvent_):
-        """获取事件对象组号"""
-        if isinstance(
-            event,
-            Union[
-                V11GroupMessageEvent,
-                V12GroupMessageEvent,
-                kaiheilaChannelMessageEvent,
-            ],
-        ):
-            return int(event.user_id)
-        if isinstance(event, qqguidChannelEvent):
-            return event.guild_id
-        return None
-
-
 G = GroupInfo()
-U = UsrInfo()
