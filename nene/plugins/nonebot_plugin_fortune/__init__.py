@@ -1,21 +1,21 @@
 from typing import Annotated
 
-from nonebot.log import logger
-from nonebot.matcher import Matcher
-from nonebot.permission import SUPERUSER
-from nonebot.plugin import PluginMetadata
-from nonebot.params import Depends, RegexStr, CommandArg
-from nonebot_plugin_saa import Text, Image, MessageFactory
-from nonebot import require, on_regex, on_command, on_fullmatch
+from nonebot import on_command, on_fullmatch, on_regex, require
 from nonebot.adapters.onebot.v11 import GROUP_ADMIN, GROUP_OWNER
 from nonebot.adapters.qqguild.permission import (
     GUILD_ADMIN,
-    GUILD_OWNER,
     GUILD_CHANNEL_ADMIN,
+    GUILD_OWNER,
 )
+from nonebot.log import logger
+from nonebot.matcher import Matcher
+from nonebot.params import CommandArg, Depends, RegexStr
+from nonebot.permission import SUPERUSER
+from nonebot.plugin import PluginMetadata
+from nonebot_plugin_saa import Image, MessageFactory, Text
 
+from nene.utils_.event import GroupEvent_, Message_
 from nene.utils_.usrinfo import G
-from nene.utils_.event import Message_, GroupEvent_
 
 from .config import FortuneConfig, FortuneThemesDict
 from .data_source import FortuneManager, fortune_manager
@@ -82,7 +82,7 @@ async def _(event: GroupEvent_):
 
 
 @themes_list.handle()
-async def _(event: GroupEvent_):
+async def _():
     msg: str = FortuneManager.get_available_themes()
     await MessageFactory(msg).send()
     # await themes_list.finish(msg)
@@ -104,7 +104,7 @@ async def _(event: GroupEvent_, args: Annotated[Message_, CommandArg()]):
 
     if not is_first:
         msg = MessageFactory(
-            [Text("你今天抽过签了，再给你看一次哦🤗\n"), Image(image_file)]
+            [Text("你今天抽过签了，再给你看一次哦🤗\n"), Image(image_file)],
         )  # noqa: E501)
     else:
         logger.info(f"User {uid} | Group {gid} 占卜了今日运势")
@@ -115,7 +115,9 @@ async def _(event: GroupEvent_, args: Annotated[Message_, CommandArg()]):
 
 @specific_divine.handle()
 async def _(
-    matcher: Matcher, event: GroupEvent_, user_themes: Annotated[str, RegexStr()]
+    matcher: Matcher,
+    event: GroupEvent_,
+    user_themes: Annotated[str, RegexStr()],
 ):
     user_theme: str = user_themes[:-2]
     if len(user_theme) < 1:
@@ -135,7 +137,7 @@ async def _(
 
                 if not is_first:
                     msg = MessageFactory(
-                        [Text("你今天抽过签了，再给你看一次哦🤗\n"), Image(image_file)]
+                        [Text("你今天抽过签了，再给你看一次哦🤗\n"), Image(image_file)],
                     )  # noqa: E501)
                 else:
                     logger.info(f"User {uid} | Group {gid} 占卜了今日运势")
@@ -183,7 +185,7 @@ async def _(event: GroupEvent_, limit: Annotated[str, Depends(get_user_arg)]):
         spec_path = fortune_manager.specific_check(limit)
         if not spec_path:
             await MessageFactory(
-                "还不可以指定这种签哦，请确认该签底对应主题开启或图片路径存在~"
+                "还不可以指定这种签哦，请确认该签底对应主题开启或图片路径存在~",
             ).finish()  # noqa: E501
         else:
             is_first, image_file = fortune_manager.divine(gid, uid, None, spec_path)
@@ -192,7 +194,7 @@ async def _(event: GroupEvent_, limit: Annotated[str, Depends(get_user_arg)]):
 
     if not is_first:
         msg = MessageFactory(
-            [Text("你今天抽过签了，再给你看一次哦🤗\n"), Image(image_file)]
+            [Text("你今天抽过签了，再给你看一次哦🤗\n"), Image(image_file)],
         )  # noqa: E501)
     else:
         logger.info(f"User {uid} | Group {gid} 占卜了今日运势")

@@ -1,11 +1,13 @@
+import contextlib
 import json
-from pathlib import Path
 from datetime import date, datetime
+from pathlib import Path
 from typing import Any, Dict, List, Union
 
+import aiofiles
 from nonebot import get_driver
 from nonebot.log import logger
-from pydantic import Extra, BaseModel, root_validator
+from pydantic import BaseModel, Extra, root_validator
 
 from .download import ResourceError, download_resource
 
@@ -74,7 +76,7 @@ class ThemesFlagConfig(BaseModel, extra=Extra.ignore):
     warship_girls_r_flag: bool = True
 
     @root_validator
-    def check_all_disabled(cls, values) -> None:
+    def check_all_disabled(self, values) -> None:
         """Check whether all themes are DISABLED"""
         flag: bool = False
         for theme in values:
@@ -148,16 +150,17 @@ async def fortune_check() -> None:
         logger.warning("Resource fortune_data.json is missing, initialized one...")
 
         with fortune_data_path.open("w", encoding="utf-8") as f:
-            json.dump(dict(), f, ensure_ascii=False, indent=4)
+            json.dump({}, f, ensure_ascii=False, indent=4)
     else:
         """
         1. Remove useless keys "gid", "uid" and "nickname"
         2. Transfer the key "is_divined" to "last_sign_date"
         """
-        with open(fortune_data_path, "r", encoding="utf-8") as f:
+        async with aiofiles.open(fortune_data_path, "r", encoding="utf-8") as f:
             _data: Dict[
-                str, Dict[str, Dict[str, Union[str, bool, int, date]]]
-            ] = json.load(f)
+                str,
+                Dict[str, Dict[str, Union[str, bool, int, date]]],
+            ] = json.loads(await f.read())
 
         for gid in _data:
             if _data[gid]:
@@ -165,24 +168,18 @@ async def fortune_check() -> None:
                     """
                     Otherwise, the last sign-in date is TODAY.
                     """
-                    try:
+                    with contextlib.suppress(KeyError):
                         _data[gid][uid].pop("nickname")
-                    except KeyError:
-                        pass
 
-                    try:
+                    with contextlib.suppress(KeyError):
                         _data[gid][uid].pop("gid")
-                    except KeyError:
-                        pass
 
-                    try:
+                    with contextlib.suppress(KeyError):
                         _data[gid][uid].pop("uid")
-                    except KeyError:
-                        pass
 
                     try:
                         is_divined: bool = _data[gid][uid].pop(
-                            "is_divined"
+                            "is_divined",
                         )  # type: ignore
                         if is_divined:
                             _data[gid][uid].update({"last_sign_date": date.today()})
@@ -191,7 +188,7 @@ async def fortune_check() -> None:
                     except KeyError:
                         pass
 
-        with open(fortune_data_path, "w", encoding="utf-8") as f:
+        with fortune_data_path.open("w", encoding="utf-8") as f:
             json.dump(_data, f, ensure_ascii=False, indent=4, cls=DateTimeEncoder)
 
     _flag: bool = False
@@ -201,17 +198,17 @@ async def fortune_check() -> None:
             ret = group_rules_transfer(fortune_setting_path, group_rules_path)
             if ret:
                 logger.info(
-                    "旧版 fortune_setting.json 文件中群聊抽签主题设置已更新至 group_rules.json"  # noqa: E501
+                    "旧版 fortune_setting.json 文件中群聊抽签主题设置已更新至 group_rules.json",  # noqa: E501
                 )  # noqa: E501
                 _flag = True
 
         if not _flag:
             # If failed or fortune_setting_path doesn't exist, initialize group_rules.json instead  # noqa: E501
             with group_rules_path.open("w", encoding="utf-8") as f:
-                json.dump(dict(), f, ensure_ascii=False, indent=4)
+                json.dump({}, f, ensure_ascii=False, indent=4)
 
             logger.info(
-                "旧版 fortune_setting.json 文件中群聊抽签主题设置不存在，初始化 group_rules.json"  # noqa: E501
+                "旧版 fortune_setting.json 文件中群聊抽签主题设置不存在，初始化 group_rules.json",  # noqa: E501
             )  # noqa: E501
 
     _flag = False
@@ -225,7 +222,7 @@ async def fortune_check() -> None:
                 fortune_setting_path.unlink()
 
                 logger.info(
-                    "旧版 fortune_setting.json 文件中签底指定规则已更新至 specific_rules.json"  # noqa: E501
+                    "旧版 fortune_setting.json 文件中签底指定规则已更新至 specific_rules.json",  # noqa: E501
                 )
                 logger.warning("指定签底抽签功能将在 v0.5.0 弃用")
                 _flag = True
@@ -238,10 +235,10 @@ async def fortune_check() -> None:
             else:
                 # If failed, initialize specific_rules.json instead
                 with specific_rules_path.open("w", encoding="utf-8") as f:
-                    json.dump(dict(), f, ensure_ascii=False, indent=4)
+                    json.dump({}, f, ensure_ascii=False, indent=4)
 
                 logger.info(
-                    "旧版 fortune_setting.json 文件中签底指定规则不存在，初始化 specific_rules.json"  # noqa: E501
+                    "旧版 fortune_setting.json 文件中签底指定规则不存在，初始化 specific_rules.json",  # noqa: E501
                 )
                 logger.warning("指定签底抽签功能将在 v0.5.0 弃用")
 
@@ -250,35 +247,36 @@ def group_rules_transfer(fortune_setting_dir: Path, group_rules_dir: Path) -> bo
     """
     Transfer the group_rule in fortune_setting.json to group_rules.json
     """
-    with open(fortune_setting_dir, "r", encoding="utf-8") as f:
+    with fortune_setting_dir.open("r", encoding="utf-8") as f:
         _setting: Dict[str, Dict[str, Union[str, List[str]]]] = json.load(f)
 
     group_rules = _setting.get("group_rule", None)  # Old key is group_rule
 
-    with open(group_rules_dir, "w", encoding="utf-8") as f:
+    with group_rules_dir.open("w", encoding="utf-8") as f:
         if group_rules is None:
-            json.dump(dict(), f, ensure_ascii=False, indent=4)
+            json.dump({}, f, ensure_ascii=False, indent=4)
             return False
-        else:
-            json.dump(group_rules, f, ensure_ascii=False, indent=4)
-            return True
+
+        json.dump(group_rules, f, ensure_ascii=False, indent=4)
+        return True
 
 
 def specific_rules_transfer(
-    fortune_setting_dir: Path, specific_rules_dir: Path
+    fortune_setting_dir: Path,
+    specific_rules_dir: Path,
 ) -> bool:  # noqa: E501
     """
     Transfer the specific_rule in fortune_setting.json to specific_rules.json
     """
-    with open(fortune_setting_dir, "r", encoding="utf-8") as f:
+    with fortune_setting_dir.open("r", encoding="utf-8") as f:
         _setting: Dict[str, Dict[str, Union[str, List[str]]]] = json.load(f)
 
     specific_rules = _setting.get("specific_rule", None)  # Old key is specific_rule
 
-    with open(specific_rules_dir, "w", encoding="utf-8") as f:
+    with specific_rules_dir.open("w", encoding="utf-8") as f:
         if not specific_rules:
-            json.dump(dict(), f, ensure_ascii=False, indent=4)
+            json.dump({}, f, ensure_ascii=False, indent=4)
             return False
-        else:
-            json.dump(specific_rules, f, ensure_ascii=False, indent=4)
-            return True
+
+        json.dump(specific_rules, f, ensure_ascii=False, indent=4)
+        return True

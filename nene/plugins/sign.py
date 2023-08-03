@@ -1,5 +1,5 @@
 from nonebot import get_driver
-from pydantic import Extra, BaseModel
+from pydantic import BaseModel, Extra
 
 
 class Config(BaseModel, extra=Extra.ignore):
@@ -15,3 +15,10 @@ plugin_config = Config.parse_obj(get_driver().config)
 BASE = plugin_config.daily_sign_base
 MULTIPLIER = plugin_config.daily_sign_multiplier
 MAX_LUCKY = plugin_config.daily_sign_max_lucky
+
+
+class SignData(BaseModel):
+    all_gold: int
+    today_gold: int
+    sign_times: int
+    streak: int
