@@ -34,7 +34,9 @@ nonebot-plugin-tortoise-orm = "0.1.0"
 pillow = "^10.0.0"
 httpx = "^0.24.0"
 aiofiles = ">=0.8.0"
-
+nonebot-plugin-datastore = "^1.0.0"
+lxml = "^4.0.0"
+Jinja2 = "^3.0.0"
 
 [project.urls]
 homepage = "https://github.com/Agnes4m/Nene-bot"
