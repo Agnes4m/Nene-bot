@@ -25,7 +25,7 @@ async def is_adapter(name: str):
 
 
 class LoginTable(Model):
-    id_ = fields.IntField(pk=True, generated=True)
+    id = fields.IntField(pk=True, generated=True)
     qq = fields.IntField(null=True)
     qqguild = fields.IntField(null=True)
     kook = fields.IntField(null=True)
@@ -64,7 +64,7 @@ class LoginTable(Model):
         else:
             login_msg = None
         if login_msg is not None:
-            return login_msg.id_
+            return login_msg.id
         return login_msg
 
     @classmethod
