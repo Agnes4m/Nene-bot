@@ -61,5 +61,5 @@ async def download_resource(
 
 
 def save_json(_file: Path, _data: Dict[str, Any]) -> None:
-    with open(_file, "w", encoding="utf-8") as f:
+    with _file.open("w", encoding="utf-8") as f:
         json.dump(_data, f, ensure_ascii=False, indent=4)
