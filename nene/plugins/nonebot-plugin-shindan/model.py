@@ -6,7 +6,7 @@ Model = get_plugin_data().Model
 
 
 class ShindanRecord(Model):
-    __table_args__ = {"extend_existing": True}  # noqa: RUF012
+    __table_args__ = {"extend_existing": True}
 
     id: Mapped[int] = mapped_column(primary_key=True)
     shindan_id: Mapped[str] = mapped_column(String(32))
