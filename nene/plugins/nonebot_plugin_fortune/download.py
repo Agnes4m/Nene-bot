@@ -34,7 +34,9 @@ async def download_url(url: str) -> Optional[Dict[str, Any]]:
 
 
 async def download_resource(
-    resource_dir: Path, name: str, _type: Optional[str] = None
+    resource_dir: Path,
+    name: str,
+    _type: Optional[str] = None,
 ) -> bool:
     """
     Try to download resources, json but not images.
@@ -52,7 +54,7 @@ async def download_resource(
         if name == "copywriting.json":
             version: float = resp.get("version", 0)
             logger.info(
-                f"Got the latest copywriting.json from repo, version: {version}"
+                f"Got the latest copywriting.json from repo, version: {version}",
             )  # noqa: E501
 
         return True
@@ -61,5 +63,5 @@ async def download_resource(
 
 
 def save_json(_file: Path, _data: Dict[str, Any]) -> None:
-    with open(_file, "w", encoding="utf-8") as f:
+    with _file.open("w", encoding="utf-8") as f:
         json.dump(_data, f, ensure_ascii=False, indent=4)

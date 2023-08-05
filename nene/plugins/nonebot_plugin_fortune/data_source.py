@@ -1,18 +1,18 @@
 import json
 import random
-from pathlib import Path
 from datetime import date, datetime
-from typing import Dict, List, Tuple, Union, Optional
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple, Union
 
-from .utils import drawing, theme_flag_check
 from .config import DateTimeEncoder, FortuneThemesDict, fortune_config
+from .utils import drawing, theme_flag_check
 
 
 class FortuneManager:
     def __init__(self):
-        self._user_data: Dict[str, Dict[str, Dict[str, Union[str, int, date]]]] = dict()
-        self._group_rules: Dict[str, str] = dict()
-        self._specific_rules: Dict[str, List[str]] = dict()
+        self._user_data: Dict[str, Dict[str, Dict[str, Union[str, int, date]]]] = {}
+        self._group_rules: Dict[str, str] = {}
+        self._specific_rules: Dict[str, List[str]] = {}
         self._user_data_file: Path = fortune_config.fortune_path / "fortune_data.json"
         self._group_rules_file: Path = fortune_config.fortune_path / "group_rules.json"
         self._specific_rules_file: Path = (
@@ -83,17 +83,17 @@ class FortuneManager:
             # Record the sign-in time
             self._end_data_handle(gid, uid, now_time)
             return True, img_path
-        else:
-            img_path: Path = fortune_config.fortune_path / "out" / f"{gid}_{uid}.png"
-            return False, img_path
+
+        img_path: Path = fortune_config.fortune_path / "out" / f"{gid}_{uid}.png"
+        return False, img_path
 
     @staticmethod
     def clean_out_pics() -> None:
         """
         Clean all the pictures saved at yesterday.
         """
-        dirPath: Path = fortune_config.fortune_path / "out"
-        for pic in dirPath.iterdir():
+        dirpath: Path = fortune_config.fortune_path / "out"
+        for pic in dirpath.iterdir():
             pic.unlink()
 
     def _init_user_data(self, gid: str, uid: str) -> None:
@@ -114,7 +114,7 @@ class FortuneManager:
 
         if uid not in self._user_data[gid]:
             self._user_data[gid][uid] = {
-                "last_sign_date": 0  # Last sign-in date. YY-MM-DD
+                "last_sign_date": 0,  # Last sign-in date. YY-MM-DD
             }
 
         self._save_data()
@@ -178,37 +178,41 @@ class FortuneManager:
         """
         读取抽签数据
         """
-        with open(self._user_data_file, "r", encoding="utf-8") as f:
+        with self._user_data_file.open("r", encoding="utf-8") as f:
             self._user_data = json.load(f)
 
     def _save_data(self) -> None:
         """
         保存抽签数据
         """
-        with open(self._user_data_file, "w", encoding="utf-8") as f:
+        with self._user_data_file.open("w", encoding="utf-8") as f:
             json.dump(
-                self._user_data, f, ensure_ascii=False, indent=4, cls=DateTimeEncoder
+                self._user_data,
+                f,
+                ensure_ascii=False,
+                indent=4,
+                cls=DateTimeEncoder,
             )
 
     def _load_group_rules(self) -> None:
         """
         读取各群抽签主题设置
         """
-        with open(self._group_rules_file, "r", encoding="utf-8") as f:
+        with self._group_rules_file.open("r", encoding="utf-8") as f:
             self._group_rules = json.load(f)
 
     def _save_group_rules(self) -> None:
         """
         保存各群抽签主题设置
         """
-        with open(self._group_rules_file, "w", encoding="utf-8") as f:
+        with self._group_rules_file.open("w", encoding="utf-8") as f:
             json.dump(self._group_rules, f, ensure_ascii=False, indent=4)
 
     def _load_specific_rules(self) -> None:
         """
         读取签底指定规则 READ ONLY
         """
-        with open(self._specific_rules_file, "r", encoding="utf-8") as f:
+        with self._specific_rules_file.open("r", encoding="utf-8") as f:
             self._specific_rules = json.load(f)
 
 

@@ -1,7 +1,7 @@
 import json
 import random
 from pathlib import Path
-from typing import List, Tuple, Optional
+from typing import List, Optional, Tuple
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -14,7 +14,7 @@ def get_copywriting() -> Tuple[str, str]:
     """
     _p: Path = fortune_config.fortune_path / "fortune" / "copywriting.json"
 
-    with open(_p, "r", encoding="utf-8") as f:
+    with _p.open("r", encoding="utf-8") as f:
         content = json.load(f).get("copywriting")
         luck = random.choice(content)
         title: str = luck.get("good-luck")
@@ -52,8 +52,8 @@ def random_basemap(theme: str, spec_path: Optional[str] = None) -> Path:
 
 def drawing(gid: str, uid: str, theme: str, spec_path: Optional[str] = None) -> Path:
     # 1. Random choice a base image
-    imgPath: Path = random_basemap(theme, spec_path)
-    img: Image.Image = Image.open(imgPath).convert("RGB")
+    imgpath: Path = random_basemap(theme, spec_path)
+    img: Image.Image = Image.open(imgpath).convert("RGB")
     draw = ImageDraw.Draw(img)
 
     # 2. Random choice a luck text with title
@@ -63,11 +63,11 @@ def drawing(gid: str, uid: str, theme: str, spec_path: Optional[str] = None) -> 
     font_size = 45
     color = "#F5F5F5"
     image_font_center = [140, 99]
-    fontPath = {
+    fontpath = {
         "title": f"{fortune_config.fortune_path.parent}/font/Mamelon.otf",
         "text": f"{fortune_config.fortune_path.parent}/font/sakura.ttf",
     }
-    ttfront = ImageFont.truetype(fontPath["title"], font_size)
+    ttfront = ImageFont.truetype(fontpath["title"], font_size)
     font_length = ttfront.getsize(title)  # type: ignore
     draw.text(
         (
@@ -83,32 +83,32 @@ def drawing(gid: str, uid: str, theme: str, spec_path: Optional[str] = None) -> 
     font_size = 25
     color = "#323232"
     image_font_center = [140, 297]
-    ttfront = ImageFont.truetype(fontPath["text"], font_size)
+    ttfront = ImageFont.truetype(fontpath["text"], font_size)
     slices, result = decrement(text)
 
     for i in range(slices):
         font_height: int = len(result[i]) * (font_size + 4)
-        textVertical: str = "\n".join(result[i])
+        textvertical: str = "\n".join(result[i])
         x: int = int(
             image_font_center[0]
             + (slices - 2) * font_size / 2
             + (slices - 1) * 4
-            - i * (font_size + 4)
+            - i * (font_size + 4),
         )
         y: int = int(image_font_center[1] - font_height / 2)
-        draw.text((x, y), textVertical, fill=color, font=ttfront)
+        draw.text((x, y), textvertical, fill=color, font=ttfront)
 
     # Save
-    outDir: Path = fortune_config.fortune_path / "out"
-    if not outDir.exists():
-        outDir.mkdir(exist_ok=True, parents=True)
+    outdir: Path = fortune_config.fortune_path / "out"
+    if not outdir.exists():
+        outdir.mkdir(exist_ok=True, parents=True)
 
     print(gid)
     print(uid)
-    outPath = outDir / f"{gid}_{uid}.png"
+    outpath = outdir / f"{gid}_{uid}.png"
 
-    img.save(outPath)
-    return outPath
+    img.save(outpath)
+    return outpath
 
 
 def decrement(text: str) -> Tuple[int, List[str]]:
@@ -134,18 +134,17 @@ def decrement(text: str) -> Tuple[int, List[str]]:
     if col_num == 2:
         if length % 2 == 0:
             # even
-            fillIn = space * int(9 - length / 2)
+            fillin = space * int(9 - length / 2)
             return col_num, [
-                text[: int(length / 2)] + fillIn,
-                fillIn + text[int(length / 2) :],
+                text[: int(length / 2)] + fillin,
+                fillin + text[int(length / 2) :],
             ]
-        else:
-            # odd number
-            fillIn = space * int(9 - (length + 1) / 2)
-            return col_num, [
-                text[: int((length + 1) / 2)] + fillIn,
-                fillIn + space + text[int((length + 1) / 2) :],
-            ]
+        # odd number
+        fillin = space * int(9 - (length + 1) / 2)
+        return col_num, [
+            text[: int((length + 1) / 2)] + fillin,
+            fillin + space + text[int((length + 1) / 2) :],
+        ]
 
     for i in range(col_num):
         if i == col_num - 1 or col_num == 1:

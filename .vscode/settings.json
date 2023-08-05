@@ -1,7 +1,7 @@
 {
-  "python.languageServer": "Pylance",
   "python.analysis.typeCheckingMode": "basic",
   "editor.formatOnSave": true,
+  "python.languageServer": "Pylance",
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter",
     "editor.formatOnSave": true,
@@ -16,7 +16,7 @@
   "python.formatting.provider": "black",
   "python.formatting.blackArgs": [
     "--line_length",
-    "88",
+    "79",
     "--skip-string-normalization"
   ]
 }
