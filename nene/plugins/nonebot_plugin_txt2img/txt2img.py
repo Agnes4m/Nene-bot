@@ -76,11 +76,13 @@ class Txt2Img:
                 if temp_len > self.text_max_width - self.text_font_size:
                     temp_len = 0
                     result += "\n"
-        result = result.rstrip()
-        return result
+        return result.rstrip()
 
     def draw_img(
-        self, title: str, text: str, template: Union[str, dict] = "mi"
+        self,
+        title: str,
+        text: str,
+        template: Union[str, dict] = "mi",
     ) -> Image.Image:
         """绘制给定模板下的图片"""
 
@@ -189,7 +191,9 @@ class Txt2Img:
             )
 
         out_img = Image.new(
-            mode="RGBA", size=(text_total_width, text_total_height), color=self.bg_color
+            mode="RGBA",
+            size=(text_total_width, text_total_height),
+            color=self.bg_color,
         )
         draw = ImageDraw.Draw(out_img)
 
@@ -238,5 +242,4 @@ def img2b64(img) -> str:
     """图片转 base64"""
     buf = BytesIO()
     img.save(buf, format="PNG")
-    base64_str = "base64://" + b64encode(buf.getvalue()).decode()
-    return base64_str
+    return "base64://" + b64encode(buf.getvalue()).decode()

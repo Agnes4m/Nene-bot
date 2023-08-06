@@ -15,8 +15,9 @@ MI_BACKGROUND_FILE = IMAGE_PATH / "mi_background.png"
 
 
 class Config(BaseSettings):
-    github_proxy:str = "https://ghproxy.net/"
-    
+    github_proxy: str = "https://ghproxy.net/"
+
+
 config = Config.parse_obj(get_driver().config)
 
 
