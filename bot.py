@@ -6,7 +6,7 @@ from nonebot.adapters.onebot.v11 import Adapter as ONEBOT_V11Adapter
 from nonebot.adapters.onebot.v12 import Adapter as ONEBOT_V12Adapter
 from nonebot.adapters.qqguild import Adapter as QQ_频道Adapter
 
-import matcher_path  # noqa: F401
+# import matcher_path  # noqa: F401
 
 nonebot.init()
 
