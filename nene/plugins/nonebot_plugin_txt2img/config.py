@@ -97,7 +97,7 @@ async def download_template() -> int:
                         url = resp.headers["location"]
                         continue
                     resp.raise_for_status()
-                    return resp.content
+                    return resp.content  # noqa: TRY300
                 except Exception as e:
                     logger.warning(f"Error downloading {url}, retry {i}/3: {e}")
                     await asyncio.sleep(3)
