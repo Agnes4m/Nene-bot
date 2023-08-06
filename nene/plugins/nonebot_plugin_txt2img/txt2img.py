@@ -66,7 +66,7 @@ class Txt2Img:
         temp_len = 0
         result = ""
         for ch in text:
-            char_w = font.getsize(ch)[0] # type: ignore
+            char_w = font.getsize(ch)[0]  # type: ignore
             if ch == "\n":
                 result += ch
                 temp_len = 0
@@ -107,7 +107,7 @@ class Txt2Img:
         self.set_font_family(font_family)
         self.set_font_color(text_color, title_color)  # type: ignore
         text_img = self.draw_text(title, text)
-            
+
         try:
             if background.get("type") == "image":
                 out_img = Image.new(
@@ -118,7 +118,11 @@ class Txt2Img:
                 bg_img = Image.open(background.get("image"))
                 out_img = tile_image(bg_img, out_img)
             elif background.get("type") == "color":
-                out_img = Image.new("RGBA", (text_img.width + 2 * margin, text_img.height + 2 * margin), background.get("color"))
+                out_img = Image.new(
+                    "RGBA",
+                    (text_img.width + 2 * margin, text_img.height + 2 * margin),
+                    background.get("color"),
+                )
             else:
                 raise ValueError("Invalid background type")  # noqa: TRY301
         except Exception as err:
@@ -169,10 +173,10 @@ class Txt2Img:
         lines = text.split("\n")
         text_rows = len(lines)
 
-        title_width = title_font.getsize(title)[0] # type: ignore
+        title_width = title_font.getsize(title)[0]  # type: ignore
 
         if not self.fix_width:
-            line_max_width = max([text_font.getsize(line)[0] for line in lines]) # type: ignore
+            line_max_width = max([text_font.getsize(line)[0] for line in lines])  # type: ignore
             text_total_width = max(line_max_width, title_width)
         else:
             text_total_width = self.text_max_width
@@ -191,7 +195,7 @@ class Txt2Img:
 
         out_img = Image.new(
             mode="RGBA",
-            size=(text_total_width, text_total_height), # type: ignore
+            size=(text_total_width, text_total_height),  # type: ignore
             color=self.bg_color,
         )
         draw = ImageDraw.Draw(out_img)
