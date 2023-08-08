@@ -14,6 +14,7 @@ from nonebot.adapters.onebot.v12 import Bot as V12Bot
 from nonebot.adapters.onebot.v12 import Message as V12Msg
 from nonebot.adapters.onebot.v12 import MessageEvent as V12MEvent
 from nonebot.adapters.onebot.v12 import MessageSegment as V12MsgSeg
+from nonebot.log import logger
 from nonebot.params import Depends
 from nonebot.typing import T_State
 from nonebot_plugin_userinfo import get_user_info
@@ -247,25 +248,19 @@ async def split_msg_kook(meme: Meme):
             #     file_id = msg_seg.data["file_id"]
             #     data = await bot.get_file(type="url", file_id=file_id)
             #     image_sources.append(ImageUrl(url=data["url"]))
+        logger.info(f"原消息:{msg}")
         for msg_seg in msg:
-            print(msg_seg.type)
+            # logger.info(f"消息类型:{msg_seg.type}")
+            # logger.info(f"消息内容:{msg_seg.data}")
             if msg_seg.type == "text":
-                # with open("test.txt","w",encoding="utf-8")as f:
-                #     json.dump(msg_seg.data,f,ensure_ascii=False)
                 raw_text: str = msg_seg.data["content"]
-                while "(met) in raw_text":
-                    if raw_text.startswith("(met)"):
-                        raw_list = raw_text.split("(met)")
-                        if len(raw_list) == 1:
-                            raw_text = ""
-                        if len(raw_list) == 2:
-                            raw_text = raw_list[-1]
-                    else:
-                        raw_list = raw_text.split("(met)")
-                        if len(raw_list) == 2:
-                            raw_text = raw_list[0]
-                        if len(raw_list) == 3:
-                            raw_text = raw_list[0] + raw_list[-1]
+                while raw_text.count("(met)") >= 2:
+                    # logger.info(f"当前信息是{raw_text}")
+                    first_index = raw_text.find("(met)")
+                    second_index = raw_text.find("(met)", first_index + 1)
+                    raw_text = raw_text[:first_index] + raw_text[second_index + 5:]
+
+                # logger.info(f"最终的信息是{raw_text}")
                 if raw_text:
                     for text in split_text(raw_text):
                         if text.startswith("@") and check_user_id(bot, text[1:]):
@@ -302,10 +297,10 @@ async def split_msg_kook(meme: Meme):
             texts = meme.params_type.default_texts
 
         state[TEXTS_KEY] = texts
-        print("文字", texts)
+        # logger.info("文字:", texts)
         state[USERS_KEY] = users
-        print("用户数量", len(users))
+        # logger.info("用户数量:", len(users))
         state[IMAGE_SOURCES_KEY] = image_sources
-        print("图片数量", len(image_sources))
+        # logger.info("图片数量:", len(image_sources))
 
     return Depends(dependency)
