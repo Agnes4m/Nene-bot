@@ -5,6 +5,8 @@ from typing import Dict, List, Optional, Union, get_args
 from nonebot.adapters import Event, MessageSegment
 from nonebot.adapters.kaiheila import Bot as kaiheilaBot
 from nonebot.adapters.kaiheila import Message as kaiheilaMessage
+
+# from nonebot.adapters.kaiheila import MessageSegment as kaiheilaMSegment
 from nonebot.adapters.kaiheila.event import (
     ChannelMessageEvent as kaiheilaCMEvent,
 )
@@ -14,6 +16,9 @@ from nonebot.adapters.kaiheila.event import PrivateMessageEvent as KaiheilaPEven
 from nonebot.adapters.onebot.v11 import Bot as V11Bot
 from nonebot.adapters.onebot.v11 import GroupMessageEvent as V11GMEvent
 from nonebot.adapters.onebot.v11 import Message as V11Message
+
+# from nonebot.adapters.onebot.v11 import MessageSegment as V11MSegment
+# from nonebot.adapters.onebot.v11 import unescape
 from nonebot.adapters.onebot.v11.event import MessageEvent as V11MEvent
 from nonebot.adapters.onebot.v11.event import NoticeEvent as V11NoticeEvent
 from nonebot.adapters.onebot.v11.event import PrivateMessageEvent as V11PEvent
@@ -21,6 +26,8 @@ from nonebot.adapters.onebot.v12 import Bot as V12Bot
 from nonebot.adapters.onebot.v12 import ChannelMessageEvent as V12CMEvent
 from nonebot.adapters.onebot.v12 import GroupMessageEvent as V12GMEvent
 from nonebot.adapters.onebot.v12 import Message as V12Message
+
+# from nonebot.adapters.onebot.v12 import MessageSegment as V12MSegment
 from nonebot.adapters.onebot.v12.event import MessageEvent as V12MEvent
 from nonebot.adapters.onebot.v12.event import NoticeEvent as V12NoticeEvent
 from nonebot.adapters.onebot.v12.event import PrivateMessageEvent as V12PrivateEvent
@@ -222,6 +229,141 @@ class MSement:
                     if one_msg:
                         at_list.append(str(one_msg["id"]))
         return at_list
+
+    async def get_image(
+        self,
+        event: Event,
+    ):
+        """获取消息中图片列表
+
+        Returns:
+            List[str]
+        """
+        at_list: List[str] = []
+        if isinstance(event, V11MEvent):
+            msgment_list: List[MessageSegment] = event.dict()["message"]
+            for one in msgment_list:
+                if one.type == "at":
+                    at_list.append(one.data["qq"])
+        if isinstance(event, kaiheilaMEvent):
+            msg_event: List[str] = event.dict()["event"]["mention"]
+            at_list = msg_event
+        if isinstance(event, qqguidMEvent):
+            msg_list: List[Dict[str, str]] = event.dict()["mentions"]
+            if msg_list:
+                for one_msg in msg_list:
+                    if one_msg:
+                        at_list.append(str(one_msg["id"]))
+        return at_list
+
+    # async def get_text_user(self,bot: Bot_, event: Event):
+    #     texts: List[str] = []
+    #     """消息"""
+    #     users: List[str] = []
+    #     """获取对象"""
+    #     image_sources: List[Union[str,bytes]] = []
+    #     """图片信息url"""
+
+    #     if isinstance(event,V11MEvent):
+    #         msg_v11:List[V11MSegment] =event.dict()["message"]
+    #         if event.reply:
+    #             for msg_seg in event.reply.message["image"]:
+    #                 image_sources.append(msg_seg.data["url"])
+
+    #         for msg_seg in msg_v11:
+    #             if msg_seg.type == "at":
+    #                 at_user = await get_user_info(bot,event,str(msg_seg.data["qq"]))
+    #                 if at_user and at_user.user_avatar:
+    #                     image_sources.append(await (at_user.user_avatar).get_image())
+    #                     users.append(str(msg_seg.data["qq"]))
+
+    #             elif msg_seg.type == "image":
+    #                 image_sources.append(msg_seg.data["url"])
+
+    #             elif msg_seg.type == "text":
+    #                 raw_text = msg_seg.data["text"]
+    #                 for text in split_text(raw_text):
+    #                     if text.startswith("@") and check_user_id(bot, text[1:]):
+    #                         user_id = text[1:]
+    #                         user_info = await get_user_info(bot,event,user_id)
+    #                         if user_info and user_info.user_avatar:
+    #                             image_sources.append(await (user_info.user_avatar).get_image())
+    #                             users.append(user_id)
+
+    #                     elif text == "自己":
+    #                         my_info = await get_user_info(bot,event,event.get_user_id())
+    #                         if my_info and my_info.user_avatar:
+    #                             image_sources.append(await my_info.user_avatar.get_image())
+    #                             users.append(event.get_user_id())
+
+    #                     elif text := unescape(text):
+    #                         texts.append(text)
+    #     elif isinstance(event,V12MEvent):
+    #         msg_v12:List[V12MSegment] =event.dict()["message"]
+    #         for msg_seg in msg_v12:
+    #             if msg_seg.type == "mention":
+    #                 mention_user = await get_user_info(bot,event,msg_seg.data["user_id"])
+    #                 if mention_user and mention_user.user_avatar:
+    #                     image_sources.append(await mention_user.user_avatar.get_image())
+    #                     users.append(msg_seg.data["user_id"])
+
+    #             elif msg_seg.type == "image":
+    #                 file_id = msg_seg.data["file_id"]
+    #                 data = await bot.get_file(type="url", file_id=file_id)
+    #                 image_sources.append(data["url"])
+
+    #             elif msg_seg.type == "text":
+    #                 raw_text = msg_seg.data["text"]
+    #                 for text in split_text(raw_text):
+    #                     if text.startswith("@") and check_user_id(bot, text[1:]):
+    #                         user_id = text[1:]
+    #                         user_info = await get_user_info(bot,event,user_id)
+    #                         if user_info and user_info.user_avatar:
+    #                             image_sources.append(await (user_info.user_avatar).get_image())
+    #                             users.append(user_id)
+
+    #                     elif text == "自己":
+    #                         my_info = await get_user_info(bot,event,event.get_user_id())
+    #                         if my_info and my_info.user_avatar:
+    #                             image_sources.append(await my_info.user_avatar.get_image())
+    #                             users.append(event.get_user_id())
+
+    #                     elif text := unescape(text):
+    #                         texts.append(text)
+
+    #     elif isinstance(event,kaiheilaMEvent):
+    #         msg_kook =  event.dict()["event"]
+    #         at_kook_user:List[str] = msg_kook["mention"]
+    #         users = at_kook_user
+    #         for one_user in at_kook_user:
+    #             at_ko_user = await get_user_info(bot,event,one_user)
+    #             if at_ko_user and at_ko_user.user_avatar:
+    #                 image_sources.append(await at_ko_user.user_avatar.get_image())
+    #                     # users = at_user
+
+    #             # elif msg_seg.type == "image":
+    #             #     file_id = msg_seg.data["file_id"]
+    #             #     data = await bot.get_file(type="url", file_id=file_id)
+    #             #     image_sources.append(data["url"])
+
+    #         raw_text = event.get_plaintext()
+    #         for text in split_text(raw_text):
+    #             if text.startswith("@") and check_user_id(bot, text[1:]):
+    #                 user_id = text[1:]
+    #                 user_info = await get_user_info(bot,event,user_id)
+    #                 if user_info and user_info.user_avatar:
+    #                     image_sources.append(await (user_info.user_avatar).get_image())
+    #                     users.append(user_id)
+
+    #             elif text == "自己":
+    #                 my_info = await get_user_info(bot,event,event.get_user_id())
+    #                 if my_info and my_info.user_avatar:
+    #                     image_sources.append(await my_info.user_avatar.get_image())
+    #                     users.append(event.get_user_id())
+
+    #             elif text := unescape(text):
+    #                 texts.append(text)
+    #     return texts,users,image_sources
 
 
 S = MessageSender()
