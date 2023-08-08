@@ -258,7 +258,7 @@ async def split_msg_kook(meme: Meme):
                     # logger.info(f"当前信息是{raw_text}")
                     first_index = raw_text.find("(met)")
                     second_index = raw_text.find("(met)", first_index + 1)
-                    raw_text = raw_text[:first_index] + raw_text[second_index + 5:]
+                    raw_text = raw_text[:first_index] + raw_text[second_index + 5 :]
 
                 # logger.info(f"最终的信息是{raw_text}")
                 if raw_text:
