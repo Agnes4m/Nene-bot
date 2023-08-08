@@ -266,21 +266,21 @@ async def split_msg_kook(meme: Meme):
                             raw_text = raw_list[0]
                         if len(raw_list) == 3:
                             raw_text = raw_list[0] + raw_list[-1]
+                if raw_text:
+                    for text in split_text(raw_text):
+                        if text.startswith("@") and check_user_id(bot, text[1:]):
+                            user_id = text[1:]
+                            image_sources.append(user_avatar(bot, event, user_id))
+                            users.append(KookUser(bot, event, user_id))
 
-                for text in split_text(raw_text):
-                    if text.startswith("@") and check_user_id(bot, text[1:]):
-                        user_id = text[1:]
-                        image_sources.append(user_avatar(bot, event, user_id))
-                        users.append(KookUser(bot, event, user_id))
+                        elif text == "自己":
+                            image_sources.append(
+                                user_avatar(bot, event, event.get_user_id()),
+                            )
+                            users.append(KookUser(bot, event, event.get_user_id()))
 
-                    elif text == "自己":
-                        image_sources.append(
-                            user_avatar(bot, event, event.get_user_id()),
-                        )
-                        users.append(KookUser(bot, event, event.get_user_id()))
-
-                    elif text:
-                        texts.append(text)
+                        elif text:
+                            texts.append(text)
 
         # 当所需图片数为 2 且已指定图片数为 1 时，使用 发送者的头像 作为第一张图
         if meme.params_type.min_images == 2 and len(image_sources) == 1:
