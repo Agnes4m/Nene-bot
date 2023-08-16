@@ -76,7 +76,7 @@ class ThemesFlagConfig(BaseModel, extra=Extra.ignore):
     warship_girls_r_flag: bool = True
 
     @root_validator
-    def check_all_disabled(self, values) -> None:
+    def check_all_disabled(cls, values) -> None:  # noqa: N805
         """Check whether all themes are DISABLED"""
         flag: bool = False
         for theme in values:
