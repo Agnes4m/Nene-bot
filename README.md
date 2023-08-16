@@ -30,3 +30,5 @@ _✨ 多平台娱乐机器人 ✨_
 
 - [求生之路](https://github.com/Agnes4m/nonebot_plugin_l4d2_server)
 - [抽签]()
+- [随机抽取]()
+- [表情包制作]()
