@@ -46,7 +46,6 @@ async def _(event: MessageEvent_, matcher: Matcher, arg: Message = CommandArg())
             await matcher.send("绑定成功，可使用`绑定信息`指令查看")
         else:
             await matcher.send("绑定出错了、、")
-        ...
     await matcher.send("参数不正确")
 
 

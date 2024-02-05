@@ -41,7 +41,9 @@ async def download_resource(
     """
     Try to download resources, json but not images.
     """
-    base_url: str = "https://ghproxy.com/https://github.com/MinatoAquaCrews/nonebot_plugin_fortune/master/nonebot_plugin_fortune/resource"
+    base_url: str = (
+        "https://ghproxy.com/https://github.com/MinatoAquaCrews/nonebot_plugin_fortune/master/nonebot_plugin_fortune/resource"
+    )
 
     if isinstance(_type, str):
         url: str = base_url + "/" + _type + "/" + name

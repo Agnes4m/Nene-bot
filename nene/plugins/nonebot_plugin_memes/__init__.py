@@ -89,12 +89,20 @@ memes_cache_dir = get_cache_dir("nonebot_plugin_memes")
 PERM_EDIT = GROUP_ADMIN | GROUP_OWNER | PRIVATE_FRIEND | PRIVATE | SUPERUSER
 PERM_GLOBAL = SUPERUSER
 
-help_cmd = on_command("表情包制作", aliases={"头像表情包", "文字表情包"}, block=True, priority=11)
-info_cmd = on_command("表情详情", aliases={"表情帮助", "表情示例"}, block=True, priority=11)
+help_cmd = on_command(
+    "表情包制作", aliases={"头像表情包", "文字表情包"}, block=True, priority=11
+)
+info_cmd = on_command(
+    "表情详情", aliases={"表情帮助", "表情示例"}, block=True, priority=11
+)
 block_cmd = on_command("禁用表情", block=True, priority=11, permission=PERM_EDIT)
 unblock_cmd = on_command("启用表情", block=True, priority=11, permission=PERM_EDIT)
-block_cmd_gl = on_command("全局禁用表情", block=True, priority=11, permission=PERM_GLOBAL)
-unblock_cmd_gl = on_command("全局启用表情", block=True, priority=11, permission=PERM_GLOBAL)
+block_cmd_gl = on_command(
+    "全局禁用表情", block=True, priority=11, permission=PERM_GLOBAL
+)
+unblock_cmd_gl = on_command(
+    "全局启用表情", block=True, priority=11, permission=PERM_GLOBAL
+)
 
 
 def get_user_id():

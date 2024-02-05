@@ -158,7 +158,6 @@ class MessageSender:
             elif adapter == "Kaiheila":
                 target = TargetKaiheilaPrivate(user_id=str(usr_id))
             elif adapter == "qqguild":
-                ...
                 # 暂无qq私聊
                 # target = TargetQQGuildChannel(channel_id=int(group_id))
                 return

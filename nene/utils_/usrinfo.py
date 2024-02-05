@@ -59,8 +59,7 @@ async def download_url(url: str) -> bytes:
 
 
 class GroupInfo(BaseModel):
-    def __init__(self):
-        ...
+    def __init__(self): ...
 
     async def get_group_usrinfo_list(self, bot: Bot_, event: GroupEvent_):
         """获取群聊用户信息"""
