@@ -250,7 +250,7 @@ def group_rules_transfer(fortune_setting_dir: Path, group_rules_dir: Path) -> bo
     with fortune_setting_dir.open("r", encoding="utf-8") as f:
         _setting: Dict[str, Dict[str, Union[str, List[str]]]] = json.load(f)
 
-    group_rules = _setting.get("group_rule", None)  # Old key is group_rule
+    group_rules = _setting.get("group_rule")  # Old key is group_rule
 
     with group_rules_dir.open("w", encoding="utf-8") as f:
         if group_rules is None:
@@ -271,7 +271,7 @@ def specific_rules_transfer(
     with fortune_setting_dir.open("r", encoding="utf-8") as f:
         _setting: Dict[str, Dict[str, Union[str, List[str]]]] = json.load(f)
 
-    specific_rules = _setting.get("specific_rule", None)  # Old key is specific_rule
+    specific_rules = _setting.get("specific_rule")  # Old key is specific_rule
 
     with specific_rules_dir.open("w", encoding="utf-8") as f:
         if not specific_rules:

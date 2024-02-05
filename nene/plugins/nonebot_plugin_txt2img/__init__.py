@@ -37,7 +37,9 @@ async def start() -> None:
     elif flag == 1:
         logger.info("模板文件下载完成")
     else:
-        message = "模板文件下载失败，请尝试手动下载并放置到工程目录下的 data/TXT2IMG 文件夹中"
+        message = (
+            "模板文件下载失败，请尝试手动下载并放置到工程目录下的 data/TXT2IMG 文件夹中"
+        )
         logger.error(message)
 
 
